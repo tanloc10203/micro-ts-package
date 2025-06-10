@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { Command } = require("commander");
-const { prompt } = require("inquirer");
+const inquirer = require("inquirer");
 const fs = require("fs-extra");
 const path = require("path");
 const chalk = require("chalk");
@@ -52,7 +52,7 @@ async function getProjectConfig(projectName, skipPrompts = false) {
     };
   }
 
-  const answers = await prompt([
+  const answers = await inquirer.default.prompt([
     {
       type: "input",
       name: "projectName",
