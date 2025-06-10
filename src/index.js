@@ -22,21 +22,23 @@ program
     try {
       const config = await getProjectConfig(projectName, options.yes);
       await generateProject(config);
-      
+
       if (!options.skipInstall) {
-        await installDependencies(config.projectName);
         // Copy .env.example to .env.development after installing dependencies
-        await copyEnvFile(config.projectName);
+        await Promise.all([
+          copyEnvFile(config.projectName),
+          installDependencies(config.projectName),
+        ]);
       }
-      
+
       console.log(chalk.green(`✅ Project ${config.projectName} created successfully!`));
       console.log(chalk.blue(`📁 cd ${config.projectName}`));
-      
+
       if (options.skipInstall) {
         console.log(chalk.blue(`📦 npm install`));
         console.log(chalk.blue(`📄 Copy .env.example to .env.development`));
       }
-      
+
       console.log(chalk.blue(`🚀 npm run dev`));
     } catch (error) {
       console.error(chalk.red("❌ Error creating project:"), error);
@@ -140,7 +142,7 @@ async function processTemplateFiles(projectDir, config) {
 async function installDependencies(projectName) {
   return new Promise((resolve, reject) => {
     console.log(chalk.blue("📦 Installing dependencies..."));
-    
+
     const projectDir = path.join(process.cwd(), projectName);
     const npmProcess = spawn("npm", ["install"], {
       cwd: projectDir,
