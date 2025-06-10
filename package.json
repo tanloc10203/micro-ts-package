@@ -1,6 +1,6 @@
 {
   "name": "@tanloc2k1/create-node-ts",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "CLI tool to generate TypeScript node projects",
   "main": "src/index.js",
   "bin": {
