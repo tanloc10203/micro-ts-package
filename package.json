@@ -3,6 +3,7 @@
   "version": "1.0.4",
   "description": "CLI tool to generate TypeScript node projects",
   "main": "dist/src/index.js",
+  "type": "module",
   "bin": {
     "create-node-ts": "dist/src/index.js"
   },
@@ -17,9 +18,11 @@
     "typescript",
     "generator",
     "cli",
-    "template"
+    "template",
+    "node",
+    "express"
   ],
-  "author": "Your Name",
+  "author": "tanloc2k1",
   "license": "MIT",
   "dependencies": {
     "inquirer": "^9.2.12",
