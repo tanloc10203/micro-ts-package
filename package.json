@@ -2,16 +2,13 @@
   "name": "@tanloc2k1/create-node-ts",
   "version": "1.0.5",
   "description": "CLI tool to generate TypeScript node projects",
-  "main": "dist/src/index.js",
+  "main": "src/index.js",
   "type": "module",
   "bin": {
-    "create-node-ts": "dist/src/index.js"
+    "create-node-ts": "src/index.js"
   },
   "scripts": {
-    "build": "tsc && npm run copy:templates",
-    "copy:templates": "cp -r templates dist/ || xcopy templates dist\\templates /E /I /Y",
-    "dev": "ts-node src/index.ts",
-    "prepublishOnly": "npm run build"
+    "dev": "node src/index.ts"
   },
   "keywords": [
     "microservice",

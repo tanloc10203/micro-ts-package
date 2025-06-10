@@ -1,21 +1,13 @@
 #!/usr/bin/env node
 
-import { Command } from "commander";
-import inquirer from "inquirer";
-import fs from "fs-extra";
-import path from "path";
-import chalk from "chalk";
-import { spawn } from "child_process";
+const { Command } = require("commander");
+const inquirer = require("inquirer");
+const fs = require("fs-extra");
+const path = require("path");
+const chalk = require("chalk");
+const { spawn } = require("child_process");
 
 const program = new Command();
-
-interface ProjectConfig {
-  projectName: string;
-  serviceName: string;
-  port: number;
-  dbName: string;
-  author: string;
-}
 
 program
   .name("create-node-ts")
@@ -49,7 +41,7 @@ program
     }
   });
 
-async function getProjectConfig(projectName?: string, skipPrompts = false): Promise<ProjectConfig> {
+async function getProjectConfig(projectName, skipPrompts = false) {
   if (skipPrompts && projectName) {
     return {
       projectName,
@@ -72,7 +64,7 @@ async function getProjectConfig(projectName?: string, skipPrompts = false): Prom
       type: "input",
       name: "serviceName",
       message: "Service name (PascalCase):",
-      default: (answers: ProjectConfig) => toPascalCase(answers.projectName),
+      default: (answers) => toPascalCase(answers.projectName),
       validate: (input) => input.trim() !== "" || "Service name is required",
     },
     {
@@ -85,7 +77,7 @@ async function getProjectConfig(projectName?: string, skipPrompts = false): Prom
       type: "input",
       name: "dbName",
       message: "Database name:",
-      default: (answers: ProjectConfig) => answers.projectName,
+      default: (answers) => answers.projectName,
     },
     {
       type: "input",
@@ -98,7 +90,7 @@ async function getProjectConfig(projectName?: string, skipPrompts = false): Prom
   return answers;
 }
 
-async function generateProject(config: ProjectConfig) {
+async function generateProject(config) {
   const templateDir = path.join(__dirname, "..", "templates");
   const targetDir = path.join(process.cwd(), config.projectName);
 
@@ -121,7 +113,7 @@ async function generateProject(config: ProjectConfig) {
   console.log(chalk.blue("✨ Project generation completed!"));
 }
 
-async function processTemplateFiles(projectDir: string, config: ProjectConfig) {
+async function processTemplateFiles(projectDir, config) {
   const filesToProcess = ["package.json", ".env.example", ".env.development"];
 
   for (const file of filesToProcess) {
@@ -142,7 +134,7 @@ async function processTemplateFiles(projectDir: string, config: ProjectConfig) {
   }
 }
 
-async function installDependencies(projectName: string): Promise<void> {
+async function installDependencies(projectName) {
   return new Promise((resolve, reject) => {
     console.log(chalk.blue("📦 Installing dependencies..."));
     
@@ -168,7 +160,7 @@ async function installDependencies(projectName: string): Promise<void> {
   });
 }
 
-function toPascalCase(str: string): string {
+function toPascalCase(str) {
   return str
     .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""))
     .replace(/^(.)/, (_, c) => c.toUpperCase());
