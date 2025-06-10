@@ -6,7 +6,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const chalk = require("chalk");
 const { spawn } = require("child_process");
-const prompt = inquirer.createPromptModule();
+const prompt = inquirer.default.prompt;
 
 const program = new Command();
 
