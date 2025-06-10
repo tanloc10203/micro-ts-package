@@ -25,6 +25,8 @@ program
       
       if (!options.skipInstall) {
         await installDependencies(config.projectName);
+        // Copy .env.example to .env.development after installing dependencies
+        await copyEnvFile(config.projectName);
       }
       
       console.log(chalk.green(`✅ Project ${config.projectName} created successfully!`));
@@ -32,6 +34,7 @@ program
       
       if (options.skipInstall) {
         console.log(chalk.blue(`📦 npm install`));
+        console.log(chalk.blue(`📄 Copy .env.example to .env.development`));
       }
       
       console.log(chalk.blue(`🚀 npm run dev`));
@@ -158,6 +161,26 @@ async function installDependencies(projectName) {
       reject(new Error(`Failed to start npm install: ${error.message}`));
     });
   });
+}
+
+async function copyEnvFile(projectName) {
+  try {
+    const projectDir = path.join(process.cwd(), projectName);
+    const envExamplePath = path.join(projectDir, ".env.example");
+    const envDevPath = path.join(projectDir, ".env.development");
+
+    // Check if .env.example exists
+    if (await fs.pathExists(envExamplePath)) {
+      console.log(chalk.blue("📄 Copying .env.example to .env.development..."));
+      await fs.copy(envExamplePath, envDevPath);
+      console.log(chalk.green("✅ Environment file copied successfully!"));
+    } else {
+      console.log(chalk.yellow("⚠️  .env.example not found, skipping env file copy"));
+    }
+  } catch (error) {
+    console.error(chalk.red("❌ Error copying environment file:"), error.message);
+    // Don't throw error, just log warning as this is not critical
+  }
 }
 
 function toPascalCase(str) {
