@@ -6,6 +6,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const chalk = require("chalk");
 const { spawn } = require("child_process");
+const prompt = inquirer.createPromptModule();
 
 const program = new Command();
 
@@ -52,7 +53,7 @@ async function getProjectConfig(projectName, skipPrompts = false) {
     };
   }
 
-  const answers = await inquirer.default.prompt([
+  const answers = await prompt([
     {
       type: "input",
       name: "projectName",
