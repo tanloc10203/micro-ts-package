@@ -5,6 +5,7 @@ import inquirer from "inquirer";
 import fs from "fs-extra";
 import path from "path";
 import chalk from "chalk";
+import { spawn } from "child_process";
 
 const program = new Command();
 
@@ -24,13 +25,23 @@ program
 program
   .argument("[project-name]", "name of the project")
   .option("-y, --yes", "skip prompts and use defaults")
+  .option("--skip-install", "skip npm install")
   .action(async (projectName, options) => {
     try {
       const config = await getProjectConfig(projectName, options.yes);
       await generateProject(config);
+      
+      if (!options.skipInstall) {
+        await installDependencies(config.projectName);
+      }
+      
       console.log(chalk.green(`✅ Project ${config.projectName} created successfully!`));
       console.log(chalk.blue(`📁 cd ${config.projectName}`));
-      console.log(chalk.blue(`📦 npm install`));
+      
+      if (options.skipInstall) {
+        console.log(chalk.blue(`📦 npm install`));
+      }
+      
       console.log(chalk.blue(`🚀 npm run dev`));
     } catch (error) {
       console.error(chalk.red("❌ Error creating project:"), error);
@@ -129,6 +140,32 @@ async function processTemplateFiles(projectDir: string, config: ProjectConfig) {
       await fs.writeFile(filePath, content);
     }
   }
+}
+
+async function installDependencies(projectName: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    console.log(chalk.blue("📦 Installing dependencies..."));
+    
+    const projectDir = path.join(process.cwd(), projectName);
+    const npmProcess = spawn("npm", ["install"], {
+      cwd: projectDir,
+      stdio: "inherit",
+      shell: true,
+    });
+
+    npmProcess.on("close", (code) => {
+      if (code === 0) {
+        console.log(chalk.green("✅ Dependencies installed successfully!"));
+        resolve();
+      } else {
+        reject(new Error(`npm install failed with exit code ${code}`));
+      }
+    });
+
+    npmProcess.on("error", (error) => {
+      reject(new Error(`Failed to start npm install: ${error.message}`));
+    });
+  });
 }
 
 function toPascalCase(str: string): string {
